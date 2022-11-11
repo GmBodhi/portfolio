@@ -5,27 +5,27 @@ import Home from "../home";
 import Projects from "../projects";
 import Root from "../root";
 
-export  const Router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Root />,
-      children: [
-        {
-          path: "home",
-          element: <Home />,
-        },
-        {
-          path: "contact",
-          element: <Contact />,
-        },
-        {
-          path: "projects",
-          element: <Projects />,
-        },
-        {
-          path: "*",
-          element: <Error404 />,
-        },
-      ],
-    },
-  ]);
+export const Router = createBrowserRouter( [
+	{
+		path: "/",
+		element: <Root />,
+		children: [
+			{
+				path: "home",
+				element: <Home />,
+			},
+			{
+				path: "contact",
+				element: <Contact />,
+			},
+			{
+				path: "projects",
+				element: <Projects />,
+			},
+			{
+				path: "*",
+				element: <Error404 />,
+			},
+		],
+	},
+] );

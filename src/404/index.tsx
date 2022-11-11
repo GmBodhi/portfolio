@@ -1,3 +1,5 @@
 export default function Error404() {
-  return <>Hello!</>;
+
+	return <>Hello!</>;
+
 }
