@@ -1,20 +1,16 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Color, Group, Mesh, OrthographicCamera } from "three";
+import { Float32BufferAttribute, Group } from "three";
 import { useEffect, useRef } from "react";
 import "./back.css";
-import { PresentationControls } from "@react-three/drei";
+// import { PresentationControls } from "@react-three/drei";
 
 export default function Background() {
-  return (
-    <div className="canvas">
-      <Canvas>
-        <Scene />
-      </Canvas>
-    </div>
-  );
+  return <Scene />;
 }
 
-function name() {}
+function Name() {
+  return <></>;
+}
 
 function Scene() {
   const controlElement = useRef<Group>(null!);
@@ -28,40 +24,102 @@ function Scene() {
       <group ref={controlElement}>
         {/* <ambientLight intensity={0.01} /> */}
         <directionalLight position={[0, 0, 5]} />
-        {/* <mesh rotation={[0.7, 1, 0]} position={[0, -2, 0]} ref={}>
+        <mesh rotation={[0.7, 1, 0]} position={[0, -2, 0]}>
           <boxGeometry args={[1, 5, 1]} />
           <meshStandardMaterial />
-        </mesh> */}
-        <Box pos={[1, -5, -5]} size={[3, 15, 3]} />
-        <Box pos={[1, 0, -1]} size={[1, 5, 1]} />
-        <Box pos={[-2, 0, -2]} size={[1, 5, 1]} />
+        </mesh>
+        <Particles />
       </group>
     </>
   );
 }
 
-function Box({
-  color,
-  pos,
-  size,
-}: {
-  color?: Color;
-  pos: [number, number, number];
-  size: [number, number, number];
-}) {
-  const meshRef = useRef<Mesh>(null!);
-  const delta = Math.random();
-  useFrame(
-    ({ clock }) =>
-      (meshRef.current!.position.y =
-        Math.sin(clock.getElapsedTime()) * 0.1 - (delta * 15 + 2))
-  );
+const vertices: number[] = [];
+const radius = 200;
+for (let i = 0; i < 10000; i++) {
+  const x = (Math.random() * 2 - 1) * radius;
+  const y = (Math.random() * 2 - 1) * radius;
+  const z = (Math.random() * 2 - 1) * radius;
+
+  vertices.push(x, y, z);
+}
+
+function Particles() {
+  // const geometry = useRef<BufferGeometry>(null!);
+  // const delta = Math.random();
   return (
     <>
-      <mesh rotation={[0.7, 1, 0]} position={pos} ref={meshRef}>
-        <boxGeometry args={size} />
-        <meshStandardMaterial color={color} />
-      </mesh>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            name="position"
+            set={() => new Float32BufferAttribute(vertices, 3)}
+          />
+        </bufferGeometry>
+        <pointsMaterial color={0xffffff} size={65} />
+      </points>
     </>
   );
 }
+
+/*
+export default function Particles({ count, mouse }) {
+  const mesh = useRef()
+  const light = useRef()
+  const { size, viewport } = useThree()
+  const aspect = size.width / viewport.width
+
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  // Generate some random positions, speed factors and timings
+  const particles = useMemo(() => {
+    const temp = []
+    for (let i = 0; i < count; i++) {
+      const t = Math.random() * 100
+      const factor = 20 + Math.random() * 100
+      const speed = 0.01 + Math.random() / 200
+      const xFactor = -50 + Math.random() * 100
+      const yFactor = -50 + Math.random() * 100
+      const zFactor = -50 + Math.random() * 100
+      temp.push({ t, factor, speed, xFactor, yFactor, zFactor, mx: 0, my: 0 })
+    }
+    return temp
+  }, [count])
+  // The innards of this hook will run every frame
+  useFrame((state) => {
+    // Makes the light follow the mouse
+    // light.current.position.set(mouse.current[0] / aspect, -mouse.current[1] / aspect, 0)
+    // Run through the randomized data to calculate some movement
+    particles.forEach((particle, i) => {
+      let { t, factor, speed, xFactor, yFactor, zFactor } = particle
+      // There is no sense or reason to any of this, just messing around with trigonometric functions
+      t = particle.t += speed / 2
+      const a = Math.cos(t) + Math.sin(t * 1) / 10
+      const b = Math.sin(t) + Math.cos(t * 2) / 10
+      const s = Math.cos(t)
+      particle.mx += (mouse.current[0] - particle.mx) * 0.01
+      particle.my += (mouse.current[1] * -1 - particle.my) * 0.01
+      // Update the dummy object
+      dummy.position.set(
+        (particle.mx / 10) * a + xFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 1) * factor) / 10,
+        (particle.my / 10) * b + yFactor + Math.sin((t / 10) * factor) + (Math.cos(t * 2) * factor) / 10,
+        (particle.my / 10) * b + zFactor + Math.cos((t / 10) * factor) + (Math.sin(t * 3) * factor) / 10
+      )
+      dummy.scale.set(s, s, s)
+      dummy.rotation.set(s * 5, s * 5, s * 5)
+      dummy.updateMatrix()
+      // And apply the matrix to the instanced item
+      mesh.current.setMatrixAt(i, dummy.matrix)
+    })
+    mesh.current.instanceMatrix.needsUpdate = true
+  })
+  return (
+    <>
+      {/* <pointLight ref={light} distance={40} intensity={8} color="lightblue" /> *//*}
+      <instancedMesh ref={mesh} args={[null, null, count]}>
+        <dodecahedronGeometry args={[0.2, 0]} />
+        <meshPhongMaterial color="#050505" />
+      </instancedMesh>
+    </>
+  )
+}
+*/
